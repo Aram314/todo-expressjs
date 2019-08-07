@@ -1,0 +1,10 @@
+<div class="container my-3">
+    <form action="/saveEdition" method="post">
+        <div class="form-group">
+            <label for="todoEditField">Edit Todo</label>
+            <input type="text" class="form-control" id="todoEditField" placeholder="Edit Todo" name="todo" value="{{todo.todo}}">
+            <input type="hidden" name="id" value="{{todo.id}}">
+        </div>
+        <button type="submit" class="btn btn-primary">Edit</button>
+    </form>
+</div>

@@ -1,0 +1,66 @@
+<div class="container my-3">
+    <form action="/" method="post">
+        <div class="form-group">
+            <label for="todoField">What Todo</label>
+            <input type="text" class="form-control" id="todoField" placeholder="Todo" name="todo">
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+
+    <ul class="list-group mt-3" id="list"></ul>
+</div>
+<script>
+    let list = document.getElementById('list');
+    list.onclick = function(event) {
+        let target = event.target;
+        if(target.closest('.todo-delete')) {
+            let todoElem = target.closest('.todoElem');
+            fetch(`/${todoElem.id}`,{method: 'delete'})
+                .then(response => response.json())
+                .then(data => {
+                    todoElem.remove();
+                });
+        }
+        if(target.closest('.todo-edit')) {
+
+            let todoElem = target.closest('.todoElem');
+            fetch('/edit', {
+                method: 'put',
+                headers: {
+                    "Content-Type": "application/json; charset=utf-8"
+                },
+            	body: JSON.stringify({
+                    todo: todoElem.querySelector('.todo-text').innerHTML,
+                    id: todoElem.id,
+                })
+            })
+            .then(() => window.location.href = "/edit")
+            // .then(data => {
+            //     window.location.href = "/edit"
+            // })
+            // fetch(`/edit?todo=${todoElem.querySelector('.todo-text').innerHTML}&id=${todoElem.id}`);
+        }
+    };
+    function makeList(todos) {
+        todos.forEach(todo => {
+            list.insertAdjacentHTML( 'beforeend', makeLi(todo) );
+        })
+    }
+    function makeLi(todo) {
+        return `
+			<li class="list-group-item todoElem" id='${todo.id}'>
+				<div class="row align-items-center">
+					<div class="col-8 todo-text">${todo.todo}</div>
+					<div class="col-4 text-right">
+						<button class="btn btn-secondary todo-edit">Edit</button>
+						<button class="btn btn-danger todo-delete">Delete</button>
+					</div>
+				</div>
+			</li>
+		`
+    }
+
+    fetch('/getTodos')
+        .then(result=>result.json())
+        .then(data => makeList(data))
+</script>
